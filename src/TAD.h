@@ -14,19 +14,20 @@ typedef struct spot_t {
 	int id;
 	int num_cams;
 	int* cams;
-	int spotted;
 } spot_t;
 
 typedef struct solution_t {
 	int cost;
 	int num_cams;
+	int num_spots;
 	int* binary_solution;
+	int* coverage_spots;
 } solution_t;
 
 
 spot_t* new_spot(int, int, int*);
 spot_t** new_spot_list(int);
-solution_t* new_solution(int);
+solution_t* new_solution(int, int);
 int validate_solution(spot_t**, int);
 
 
