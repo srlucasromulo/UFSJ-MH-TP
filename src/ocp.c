@@ -7,7 +7,8 @@
 
 int main (int argc, char* argv[]) {
 
-	FILE* file = fopen("./data/AC_01_cover.txt", "r");
+	// FILE* file = fopen("../data/AC_01_cover.txt", "r");	// deploy
+	FILE* file = fopen("./data/AC_01_cover.txt", "r");	// production
 	if (! file){
 		printf("%s\n", "File not found!!");
 		exit(1);
@@ -16,12 +17,6 @@ int main (int argc, char* argv[]) {
 	int num_spots, num_cams;
 	load_values(file, &num_spots, &num_cams);
 	
-	solution_t* solution;
-	solution = new_solution(num_cams);
-
-	// DBG 
-	// printf("profit: %d, num_cams: %d \n", solution->profit, solution->num_cams);
-
 	spot_t** spots;
 	spots = new_spot_list(num_spots);
 
@@ -32,6 +27,8 @@ int main (int argc, char* argv[]) {
 
 	load_spots(file, spots, num_spots);
 
+	fclose(file);
+
 	// DBG
 	// for (int i = 0; i < num_spots; i++){
 	// 	for (int j = 0; j < spots[i]->num_cams; j++)
@@ -39,5 +36,10 @@ int main (int argc, char* argv[]) {
 	// 	printf("\n\n");
 	// }
 
-	fclose(file);
+	solution_t* solution;
+	solution = new_solution(num_cams);
+
+	// DBG 
+	// printf("cost: %d, num_cams: %d \n", solution->cost, solution->num_cams);
+
 }

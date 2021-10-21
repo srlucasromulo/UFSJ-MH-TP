@@ -34,12 +34,21 @@ solution_t* new_solution(int num_cams) {
 	solution_t* solution;
 
 	solution = (solution_t*) malloc (sizeof(solution_t));
-	solution->profit = 0;
+	solution->cost = 0;
 	solution->num_cams = num_cams;
 
 	solution->binary_solution = (int*) malloc (num_cams * sizeof(int));
 	for (int i = 0; i < num_cams; i++)
-		solution->binary_solution[i] = 0;
+		solution->binary_solution[i] = OFF;
 
 	return solution;
+}
+
+int validate_solution(spot_t** spots, int num_spots){
+
+	for (int i = 0; i < num_spots; i++)
+		if (!spots[i]->spotted)
+			return FALSE;
+
+	return TRUE;
 }
