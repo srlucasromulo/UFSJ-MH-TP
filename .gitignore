@@ -1,5 +1,8 @@
-# Dados de entrada
+# Input data
 data/
+
+# Binary
+bin/
 
 # Prerequisites
 *.d
