@@ -19,6 +19,7 @@ typedef struct spot_t {
 
 typedef struct solution_t {
 	int cost;
+	int fitness;
 	int num_cams;
 	int num_spots;
 	int* binary_solution;

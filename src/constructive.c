@@ -17,6 +17,8 @@ void update_solution(int position, solution_t* solution, spot_t** spot_list){
 			if(position == spot_list[i]->cams[j])
 		
 				solution->coverage_spots[i] = TRUE;
+
+	solution->fitness = K / solution->cost;
 }
 
 solution_t* random_valid_solution(int num_spots, int num_cams, spot_t** spot_list){
