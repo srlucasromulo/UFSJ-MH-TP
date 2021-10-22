@@ -8,7 +8,6 @@
 
 
 #include <stdio.h>
-#include <time.h>
 #include "TAD.h"
 #include "constructive.h"
 

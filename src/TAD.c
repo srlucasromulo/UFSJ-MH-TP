@@ -58,3 +58,9 @@ int validate_solution(solution_t* solution){
 
 	return TRUE;
 }
+
+int random_number(int max){
+	
+	srand(time(NULL));
+	return max ? (rand() % max) : rand();
+}

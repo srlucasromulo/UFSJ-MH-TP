@@ -3,6 +3,7 @@
 
 
 #include <stdlib.h>
+#include <time.h>
 
 
 #define TRUE 1
@@ -32,5 +33,6 @@ spot_t** new_spot_list(int);
 solution_t* new_solution(int, int);
 int validate_solution(solution_t*);
 
+int random_number(int);
 
 #endif

@@ -26,21 +26,13 @@ solution_t* random_valid_solution(int num_spots, int num_cams, spot_t** spot_lis
 	solution_t* solution;
 	solution = new_solution(num_spots, num_cams);
 
-	srand(time(NULL));
-
 	do {
 
-		int position = rand() % num_cams;
+		int position = random_number(num_cams);
 
 		update_solution(position, solution, spot_list);
 
 	} while(!validate_solution(solution));	
 
-	// printf("fitness : %i \n", solution->cost);
-
-	// for(int i = 0; i < num_spots; i++)
-	// 	printf("%i", solution->coverage_spots[i]);
-
 	return solution;
-
 }
