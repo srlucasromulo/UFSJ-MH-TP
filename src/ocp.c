@@ -1,8 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "inout.h"
 #include "TAD.h"
+#include "constructive.h"
+#include "ag.h"
 
 
 int main (int argc, char* argv[]) {
@@ -29,8 +28,8 @@ int main (int argc, char* argv[]) {
 
 	fclose(file);
 
-	solution_t** solution;
-	solution = gera_individuo(num_spots, num_cams, spot_list);
+	solution_t* solution;
+	solution = random_valid_solution(num_spots, num_cams, spot_list);
 
 	// DBG
 	// for (int i = 0; i < num_spots; i++){

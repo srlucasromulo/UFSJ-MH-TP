@@ -1,6 +1,7 @@
 #ifndef __TAD__
 #define __TAD__
 
+
 #include <stdlib.h>
 
 
@@ -28,7 +29,7 @@ typedef struct solution_t {
 spot_t* new_spot(int, int, int*);
 spot_t** new_spot_list(int);
 solution_t* new_solution(int, int);
-int validate_solution(spot_t**, int);
+int validate_solution(solution_t*);
 
 
 #endif

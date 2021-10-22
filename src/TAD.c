@@ -50,12 +50,11 @@ solution_t* new_solution(int num_spots, int num_cams) {
 
 }
 
-// int validate_solution(spot_t** spots, int num_spots){
+int validate_solution(solution_t* solution){
 
-// 	for (int i = 0; i < num_spots; i++)
-// 		if (!spots[i]->spotted)
-// 			return FALSE;
+	for(int i = 0; i < solution->num_spots; i++)
+		if(!solution->coverage_spots[i])
+			return FALSE;
 
-// 	return TRUE;
-
-// }
+	return TRUE;
+}
