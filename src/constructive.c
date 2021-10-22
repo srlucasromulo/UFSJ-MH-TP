@@ -1,5 +1,6 @@
 #include "constructive.h"
 
+#include <stdio.h>	// DBG
 
 void update_solution(int position, solution_t* solution, spot_t** spot_list){
 
@@ -18,7 +19,7 @@ void update_solution(int position, solution_t* solution, spot_t** spot_list){
 		
 				solution->coverage_spots[i] = TRUE;
 
-	solution->fitness = K / solution->cost;
+	// solution->fitness = K / solution->cost;
 }
 
 solution_t* random_valid_solution(int num_spots, int num_cams, spot_t** spot_list){
@@ -26,11 +27,13 @@ solution_t* random_valid_solution(int num_spots, int num_cams, spot_t** spot_lis
 	solution_t* solution;
 	solution = new_solution(num_spots, num_cams);
 
+	srand(time(NULL));
+
 	do {
 
-		int position = random_number(num_cams);
+		int cam_id = rand() % num_cams;
 
-		update_solution(position, solution, spot_list);
+		update_solution(cam_id, solution, spot_list);
 
 	} while(!validate_solution(solution));	
 

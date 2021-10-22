@@ -123,7 +123,7 @@ void calcula_fitness(solution_t* individuo){
 
 }
 
-float total_fitness(solution_t** populacao){
+float total_fitness_(solution_t** populacao){	// change name
 
 	float total = 0;
 
@@ -151,7 +151,7 @@ solution_t* algoritmo_genetico(int num_spots, int num_cams, spot_t** spot_list){
 	int indice_pai1, indice_pai2, melhor;
 	solution_t** populacao = gera_populacao_inicial(num_spots, num_cams, spot_list);
 
-	float total_fitness = total_fitness(populacao);
+	float total_fitness = total_fitness_(populacao);
 
 	melhor = pega_melhor(populacao);
 
@@ -165,6 +165,7 @@ solution_t* algoritmo_genetico(int num_spots, int num_cams, spot_t** spot_list){
 		for(int j = 0; j < 2; j++)
 			aux[j] = (solution_t*) malloc (sizeof(solution_t));
 
+		// ordenar
 
 		indice_pai1 = seleciona_pai(total_fitness, populacao);
 		indice_pai2 = seleciona_pai(total_fitness, populacao);
@@ -188,7 +189,7 @@ solution_t* algoritmo_genetico(int num_spots, int num_cams, spot_t** spot_list){
 
 		melhor = pega_melhor(populacao);
 
-		if(solucao_corrente->fitness < populacao[melhor])
+		if(solucao_corrente->fitness < populacao[melhor]->fitness)
 			solucao_corrente = populacao[melhor];
 
 	}
