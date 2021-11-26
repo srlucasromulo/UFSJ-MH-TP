@@ -6,6 +6,8 @@
 
 int main (int argc, char* argv[]) {
 
+	srand(time(NULL));
+
 	FILE* file = fopen("./data/AC_01_cover.txt", "r");
 	if (! file){
 		printf("%s\n", "File not found!!");
@@ -22,8 +24,10 @@ int main (int argc, char* argv[]) {
 
 	fclose(file);
 
-	solution_t* solution;
-	solution = random_valid_solution(num_spots, num_cams, spot_list);
+	// solution_t* solution;
+	// solution = random_valid_solution(num_spots, num_cams, spot_list);
 
-	export_solution(solution);
+
+	ag(num_spots, num_cams, spot_list);
+
 }

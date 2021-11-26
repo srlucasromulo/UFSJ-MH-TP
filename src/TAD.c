@@ -14,7 +14,6 @@ spot_t* new_spot(int id, int num_cams, int* cams){
 		spot->cams[i] = cams[i];
 
 	return spot;
-
 }
 
 spot_t** new_spot_list(int num_spots) {
@@ -26,7 +25,6 @@ spot_t** new_spot_list(int num_spots) {
 		spots[i] = (spot_t*) malloc (sizeof(spot_t));
 
 	return spots;
-
 }
 
 solution_t* new_solution(int num_spots, int num_cams) {
@@ -58,3 +56,43 @@ int validate_solution(solution_t* solution){
 
 	return TRUE;
 }
+
+void update_solution(solution_t* solution){
+
+	solution->cost = 0;
+
+	for (int i = 0; i < solution->num_cams; i++)
+		if (solution->binary_solution[i])
+			solution->cost++;
+}
+
+
+// 	LER ESSA BAGAÇA
+void repare_solution(solution_t* solution, spot_t** spot_list){
+
+	for(int i = 0; i < solution->num_spots; i++){
+
+		if(solution->coverage_spots[i] == FALSE){
+
+			int random = rand() / spot_list[i]->num_cams;
+			int cam_id = spot_list[i]->cams[random];
+
+			solution->binary_solution[cam_id] = ON;
+			solution->coverage_spots[i] = TRUE;
+
+			for(int j = i+1; j < solution->num_spots; j++){
+
+				if (solution->coverage_spots[j] == FALSE)
+
+					for(int k = 0; k < spot_list[j]->num_cams; k++)
+				
+						if(cam_id == spot_list[j]->cams[k])
+			
+							solution->coverage_spots[j] = TRUE;
+			}			
+		}
+		solution->cost++;
+	}
+}
+
+
