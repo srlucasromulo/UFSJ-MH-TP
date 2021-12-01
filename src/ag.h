@@ -2,11 +2,12 @@
 #define __AG__
 #define TAM_POP 1000
 #define NUM_GER 1000
-#define PROB_MUT 0.05
+#define PROB_MUT 0.1
 #define ALFA 2
 
 
 #include <stdio.h>
+#include <math.h>
 #include "TAD.h"
 #include "constructive.h"
 

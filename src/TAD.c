@@ -48,6 +48,22 @@ solution_t* new_solution(int num_spots, int num_cams) {
 
 }
 
+
+void add_cam_to_solution(int position, solution_t* solution, spot_t** spot_list){
+
+	solution->binary_solution[position] = ON;
+
+	for(int i = 0; i < solution->num_spots; i++)
+
+		if (solution->coverage_spots[i] == FALSE)
+
+			for(int j = 0; position >= spot_list[i]->cams[j]; j++)
+			
+				if(position == spot_list[i]->cams[j])
+			
+					solution->coverage_spots[i] = TRUE;
+}
+
 int validate_solution(solution_t* solution){
 
 	for(int i = 0; i < solution->num_spots; i++)
@@ -57,42 +73,40 @@ int validate_solution(solution_t* solution){
 	return TRUE;
 }
 
-void update_solution(solution_t* solution){
+void update_solution(solution_t* solution, spot_t** spot_list){
 
-	solution->cost = 0;
+	calc_cost(solution);
 
-	for (int i = 0; i < solution->num_cams; i++)
-		if (solution->binary_solution[i])
-			solution->cost++;
+	for(int i = 0; i < solution->num_spots; i++)
+		solution->coverage_spots[i] = 0;
+
+	for(int i = 0; i < solution->num_cams; i++)
+
+		if(solution->binary_solution[i])
+
+			add_cam_to_solution(i, solution, spot_list);
 }
 
-
-// 	LER ESSA BAGAÇA
 void repare_solution(solution_t* solution, spot_t** spot_list){
 
 	for(int i = 0; i < solution->num_spots; i++){
 
 		if(solution->coverage_spots[i] == FALSE){
 
-			int random = rand() / spot_list[i]->num_cams;
+			int random = rand() % spot_list[i]->num_cams;
+			// printf("random: %i, num_cams: %i <----\n", random, spot_list[i]->num_cams);
 			int cam_id = spot_list[i]->cams[random];
 
-			solution->binary_solution[cam_id] = ON;
-			solution->coverage_spots[i] = TRUE;
-
-			for(int j = i+1; j < solution->num_spots; j++){
-
-				if (solution->coverage_spots[j] == FALSE)
-
-					for(int k = 0; k < spot_list[j]->num_cams; k++)
-				
-						if(cam_id == spot_list[j]->cams[k])
-			
-							solution->coverage_spots[j] = TRUE;
-			}			
+			add_cam_to_solution(cam_id, solution, spot_list);
 		}
-		solution->cost++;
 	}
+	calc_cost(solution);
 }
 
+void calc_cost(solution_t* solution){
 
+	solution->cost = 0;
+	for(int i = 0; i < solution->num_cams; i++)
+		if(solution->binary_solution[i])
+			solution->cost++;
+}

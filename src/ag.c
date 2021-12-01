@@ -3,6 +3,25 @@
 
 void print_populacao(solution_t**);
 
+void calc_fitness(solution_t* solution){
+	solution->fitness = pow(solution->cost, 2);
+}
+
+int cmp_func(const void* a, const void* b){
+
+	solution_t* item_a = *(solution_t**)a;
+	solution_t* item_b = *(solution_t**)b;
+
+	return item_a->fitness < item_b->fitness ? -1 : 1;
+}
+
+void order_population(solution_t** population){
+
+	for(int i = 0; i < TAM_POP; i++)
+		calc_fitness(population[i]);
+
+	qsort(population, TAM_POP, sizeof(solution_t*), cmp_func);
+}
 
 solution_t** generate_init_population(int num_spots, int num_cams, spot_t** spot_list){
 
@@ -18,6 +37,16 @@ solution_t** generate_init_population(int num_spots, int num_cams, spot_t** spot
 	return population;
 }
 
+double calc_total_fitness(solution_t** populacao){
+
+	double total = 0;
+
+	for(int i = 0; i < TAM_POP; i++)
+		total += 1.0/populacao[i]->fitness;
+
+	return (total);
+}
+
 int get_father(double total_fitness, solution_t** population){
 
 	int pai = -1;
@@ -28,30 +57,24 @@ int get_father(double total_fitness, solution_t** population){
 	do {
 		
 		pai++;
-		soma += 1.0/population[pai]->cost;		
+		soma += 1.0/population[pai]->fitness;		
 
 	} while(soma < valor_sorteado);
 
 	return pai;
 }
 
-void crossover(solution_t** population, int father1, int father2){
+void crossover(solution_t** population1, solution_t** population2){
 
-	int num_spots = population[0]->num_spots;
-	int num_cams = population[0]->num_cams;
+	int num_cams = population1[0]->num_cams;
+	int f1, f2;
 
-	solution_t** father = (solution_t**) malloc (2 * sizeof(solution_t*));
-
-	for(int i = 0; i < 2; i++){
-		father[i] = (solution_t*) malloc (sizeof(solution_t));
-		father[i] = new_solution(num_spots, num_cams);
-	}
-
-	*father[0] = *(solution_t*)population[father1];
-	*father[1] = *(solution_t*)population[father2];
-
+	double total_fitness = calc_total_fitness(population1);
 
 	for(int i = 0; i < TAM_POP; i+=2){
+
+		f1 = get_father(total_fitness, population1);
+		f2 = get_father(total_fitness, population1);
 
 		int point = rand() % num_cams;
 
@@ -59,19 +82,19 @@ void crossover(solution_t** population, int father1, int father2){
 
 			if(j < point){
 
-				population[i]->binary_solution[j] = father[0]->binary_solution[j];
-				population[i+1]->binary_solution[j] = father[1]->binary_solution[j];
+				population2[i]->binary_solution[j] = population1[f1]->binary_solution[j];
+				population2[i+1]->binary_solution[j] = population1[f2]->binary_solution[j];
 
 			}else{
 
-				population[i]->binary_solution[j] = father[1]->binary_solution[j];
-				population[i+1]->binary_solution[j] = father[0]->binary_solution[j];
+				population2[i]->binary_solution[j] = population1[f2]->binary_solution[j];
+				population2[i+1]->binary_solution[j] = population1[f1]->binary_solution[j];
 			}
 		}
 	}
 }
 
-void mutation(solution_t** population){
+void mutation(solution_t** population){	// alterar
 
 	int num_cams = population[0]->num_cams;
 
@@ -79,95 +102,74 @@ void mutation(solution_t** population){
 
 		for(int j = 0; j < num_cams; j++){
 
-			if((rand()*1.0 / RAND_MAX) < PROB_MUT){
-
-				if(population[i]->binary_solution[j])
-					population[i]->binary_solution[j] = 0;
-				// else
-				// 	population[i]->binary_solution[j] = 1;
-			}
+			if(population[i]->binary_solution[j] && (rand()*1.0 / RAND_MAX) < PROB_MUT)
+				population[i]->binary_solution[j] = OFF;
 		}
 	}
 }
 
-double calc_total_fitness(solution_t** populacao){
+void elitism(solution_t** population1, solution_t** population2, solution_t** next_population){
 
-	double total = 0;
+	int p1 = 0;
+	int p2 = 0;
 
 	for(int i = 0; i < TAM_POP; i++)
-		total += 1.0/populacao[i]->cost;
 
-	return (total);
+		if(population1[p1]->cost < population2[p2]->cost){
+			*next_population[i] = *population1[p1];
+			p1++;
+
+		} else {
+			*next_population[i] = *population2[p2];
+			p2++;
+		}
 }
 
-int cmp_func(const void* a, const void* b){
+void update_population(solution_t** population, spot_t** spot_list){
 
-	solution_t* item_a = *(solution_t**)a;
-	solution_t* item_b = *(solution_t**)b;
+	for(int i = 0; i < TAM_POP; i++)
+		update_solution(population[i], spot_list);
 
-	return item_a->cost < item_b->cost ? -1 : 1;
+	for(int i = 0; i < TAM_POP; i++)
+		repare_solution(population[i], spot_list);
 }
-
-void order_population(solution_t** population){
-
-	qsort(population, TAM_POP, sizeof(solution_t*), cmp_func);
-}
-
 
 solution_t* ag(int num_spots, int num_cams, spot_t** spot_list){
 
-	solution_t** population = generate_init_population(num_spots, num_cams, spot_list);
+	solution_t** population1 = generate_init_population(num_spots, num_cams, spot_list);
+	solution_t** population2 = generate_init_population(num_spots, num_cams, spot_list);
+	solution_t** new_population = generate_init_population(num_spots, num_cams, spot_list);
 
-	order_population(population);
+	order_population(population1);
 
 	solution_t* current_solution;
 	current_solution = new_solution(num_spots, num_cams);
-	*current_solution = *population[0];
+	*current_solution = *population1[0];
 
-	printf("populacao inicial: ");
-	for(int k = 0; k < TAM_POP; k++)
-		printf("%i ", population[k]->cost);
+	// int ger = 0;
 
 	for(int i = 0; i < NUM_GER; i++){
 
-		double total_fitness = calc_total_fitness(population);
+		crossover(population1, population2);
 
-		int father1 = get_father(total_fitness, population);
+		mutation(population2);
 
-		int father2 = get_father(total_fitness, population);
+		update_population(population2, spot_list);
 
-		crossover(population, father1, father2);
+		order_population(population1);
+		order_population(population2);
 
-		mutation(population);
+		elitism(population1, population2, new_population);
 
-		for(int j = 0; j < TAM_POP; j++)
-			update_solution(population[j]);
-
-		// for(int j = 0; j < TAM_POP; j++)
-		// 	repare_solution(population[j], spot_list);
-
-		order_population(population);
-
-		// DBG
-		if(population[0]->cost < current_solution->cost && validate_solution(population[0])){
-			printf("TROCOU!! <--- pop0: %i, current: %i\n", population[0]->cost, current_solution->cost);
-			*current_solution = *population[0];
+		if(current_solution->cost > new_population[0]->cost){
+			*current_solution = *new_population[0];
+			// ger = i;
 		}
 
-		// errado, atualizar coverage
-		int count = 0;
-		for(int k = 0; k < TAM_POP; k++)
-			if(validate_solution(population[k]) == FALSE)
-				count++;
-
-		printf("\npopulacao%i: ", i+1);
-		for(int k = 0; k < TAM_POP; k++)
-			printf("%i ", population[k]->cost);
-
-		printf(" -  invalidas: %i", count);
+		population1 = new_population;
 	}
 
-	printf("\n");
+	// printf("curr cost: %i from ger: %i\n", current_solution->cost, ger);
 
 	return current_solution;
 }
@@ -177,16 +179,22 @@ void print_populacao(solution_t** populacao){
 
 	for (int i = 0; i < TAM_POP; i++){
 
-		printf("Custo: %i \n", populacao[i]->cost);
+		printf("\nCusto: %i \n", populacao[i]->cost);
 
-		for (int j = 0; j < populacao[i]->num_cams; j++){
+			int count = 0;
+		for (int j = 0; j < populacao[i]->num_spots; j++){
 
-			if (populacao[i]->binary_solution[j])
-				printf("%i ", j);
 
+			if (populacao[i]->coverage_spots[j])
+				// printf("%i ", j);
+				// printf("%i ", 1);
+				count++;
+			
 		}
+		printf("%i ", count);
 
 		printf("\n");
 
 	}
+		printf("\nFIM POP <_-------------\n");
 }
