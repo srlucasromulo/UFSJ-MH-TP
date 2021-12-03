@@ -1,6 +1,7 @@
 #include "TAD.h"
 
 
+// creates a new target spot and lists the cams that reaches it
 spot_t* new_spot(int id, int num_cams, int* cams){
 
 	spot_t* spot;
@@ -16,6 +17,7 @@ spot_t* new_spot(int id, int num_cams, int* cams){
 	return spot;
 }
 
+// creates a blank list of pointers to target spots 
 spot_t** new_spot_list(int num_spots) {
 
 	spot_t** spots;
@@ -27,6 +29,7 @@ spot_t** new_spot_list(int num_spots) {
 	return spots;
 }
 
+// creates a blank solution
 solution_t* new_solution(int num_spots, int num_cams) {
 
 	solution_t* solution;
@@ -48,20 +51,26 @@ solution_t* new_solution(int num_spots, int num_cams) {
 
 }
 
+// adds a cam to the solution and update the target spots
 void add_cam_to_solution(int position, solution_t* solution, spot_t** spot_list){
 
 	solution->binary_solution[position] = ON;
 
+	// iterates in the list of target spots
 	for(int i = 0; i < solution->num_spots; i++)
 
+		// checks if the spot is already covered
 		if (solution->coverage_spots[i] == FALSE)
 
+			// iterates in the list of cams that reaches the spot
 			for(int j = 0; position >= spot_list[i]->cams[j]; j++)
 			
+				// if the cam reaches the spot, marks it
 				if(position == spot_list[i]->cams[j])
 					solution->coverage_spots[i] = TRUE;
 }
 
+// checks if a solution is valid (all targets are covered)
 int validate_solution(solution_t* solution){
 
 	for(int i = 0; i < solution->num_spots; i++)
@@ -71,23 +80,30 @@ int validate_solution(solution_t* solution){
 	return TRUE;
 }
 
+// after crossover and mutation, updates the list of covered target spots
 void update_solution(solution_t* solution, spot_t** spot_list){
 
+	// clears the list of reached target spots
 	for(int i = 0; i < solution->num_spots; i++)
 		solution->coverage_spots[i] = 0;
 
+	// calls add_cam_to_solution to every cam in the new solution
+	// to fill the list of targeted spots
 	for(int i = 0; i < solution->num_cams; i++)
 
 		if(solution->binary_solution[i])
 			add_cam_to_solution(i, solution, spot_list);
 }
 
+// checks if there is target spots uncovered and adds a cam that covers that spot
 void repare_solution(solution_t* solution, spot_t** spot_list){
 
+	// for each non covered target spot
 	for(int i = 0; i < solution->num_spots; i++){
 
 		if(solution->coverage_spots[i] == FALSE){
 
+			// chooses a random cam (that covers the spot) and adds to solution
 			int random = rand() % spot_list[i]->num_cams;
 			int cam_id = spot_list[i]->cams[random];
 
@@ -96,6 +112,8 @@ void repare_solution(solution_t* solution, spot_t** spot_list){
 	}
 }
 
+// calculates the cost of a solution
+// cost = num of cams used to reaches all the target spots
 void calc_cost(solution_t* solution){
 
 	int cost = 0;

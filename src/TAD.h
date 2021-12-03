@@ -16,7 +16,7 @@
 typedef struct spot_t {
 	int id;
 	int num_cams;
-	int* cams;
+	int* cams;		// list of cams that covers the target spot
 } spot_t;
 
 typedef struct solution_t {
@@ -24,8 +24,8 @@ typedef struct solution_t {
 	int fitness;
 	int num_cams;
 	int num_spots;
-	int* binary_solution;
-	int* coverage_spots;
+	int* binary_solution;	// bin list that represents cams used
+	int* coverage_spots;	// bin list that marks covered target spots
 } solution_t;
 
 

@@ -3,6 +3,8 @@
 #include "constructive.h"
 #include "genetic_algorithm.h"
 
+#include <string.h>
+
 
 int main (int argc, char* argv[]) {
 
@@ -10,8 +12,13 @@ int main (int argc, char* argv[]) {
 	srand(time(NULL));
 	clock_t t = clock();
 
-	// file check
-	FILE* file = fopen("./data/AC_01_cover.txt", "r");
+	// selects the file
+	char filepath[50] = "./data/";
+	char filename[50] = "AC_01_cover.txt";
+	strcat(filepath,filename);
+
+	// try to open file
+	FILE* file = fopen(filepath, "r");
 	if (! file){
 		printf("%s\n", "File not found!!");
 		exit(1);
