@@ -33,11 +33,11 @@ spot_t* new_spot(int, int, int*);
 spot_t** new_spot_list(int);
 solution_t* new_solution(int, int);
 
+void calc_cost(solution_t*);
 int validate_solution(solution_t*);
 void update_solution(solution_t*, spot_t**);
 void repare_solution(solution_t*, spot_t**);
-void calc_cost(solution_t*);
-
 void add_cam_to_solution(int, solution_t*, spot_t**);
+
 
 #endif

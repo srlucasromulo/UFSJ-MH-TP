@@ -48,7 +48,6 @@ solution_t* new_solution(int num_spots, int num_cams) {
 
 }
 
-
 void add_cam_to_solution(int position, solution_t* solution, spot_t** spot_list){
 
 	solution->binary_solution[position] = ON;
@@ -60,7 +59,6 @@ void add_cam_to_solution(int position, solution_t* solution, spot_t** spot_list)
 			for(int j = 0; position >= spot_list[i]->cams[j]; j++)
 			
 				if(position == spot_list[i]->cams[j])
-			
 					solution->coverage_spots[i] = TRUE;
 }
 
@@ -75,15 +73,12 @@ int validate_solution(solution_t* solution){
 
 void update_solution(solution_t* solution, spot_t** spot_list){
 
-	calc_cost(solution);
-
 	for(int i = 0; i < solution->num_spots; i++)
 		solution->coverage_spots[i] = 0;
 
 	for(int i = 0; i < solution->num_cams; i++)
 
 		if(solution->binary_solution[i])
-
 			add_cam_to_solution(i, solution, spot_list);
 }
 
@@ -94,19 +89,20 @@ void repare_solution(solution_t* solution, spot_t** spot_list){
 		if(solution->coverage_spots[i] == FALSE){
 
 			int random = rand() % spot_list[i]->num_cams;
-			// printf("random: %i, num_cams: %i <----\n", random, spot_list[i]->num_cams);
 			int cam_id = spot_list[i]->cams[random];
 
 			add_cam_to_solution(cam_id, solution, spot_list);
 		}
 	}
-	calc_cost(solution);
 }
 
 void calc_cost(solution_t* solution){
 
-	solution->cost = 0;
+	int cost = 0;
+
 	for(int i = 0; i < solution->num_cams; i++)
 		if(solution->binary_solution[i])
-			solution->cost++;
+			cost++;
+
+	solution->cost = cost;
 }

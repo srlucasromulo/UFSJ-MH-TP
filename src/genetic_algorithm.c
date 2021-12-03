@@ -1,7 +1,5 @@
-#include "ag.h"
+#include "genetic_algorithm.h"
 
-
-void print_populacao(solution_t**);
 
 void calc_fitness(solution_t* solution){
 	solution->fitness = pow(solution->cost, 2);
@@ -44,7 +42,7 @@ double calc_total_fitness(solution_t** populacao){
 	for(int i = 0; i < TAM_POP; i++)
 		total += 1.0/populacao[i]->fitness;
 
-	return (total);
+	return total;
 }
 
 int get_father(double total_fitness, solution_t** population){
@@ -94,7 +92,7 @@ void crossover(solution_t** population1, solution_t** population2){
 	}
 }
 
-void mutation(solution_t** population){	// alterar
+void mutation(solution_t** population){
 
 	int num_cams = population[0]->num_cams;
 
@@ -127,14 +125,14 @@ void elitism(solution_t** population1, solution_t** population2, solution_t** ne
 
 void update_population(solution_t** population, spot_t** spot_list){
 
-	for(int i = 0; i < TAM_POP; i++)
+	for(int i = 0; i < TAM_POP; i++){
 		update_solution(population[i], spot_list);
-
-	for(int i = 0; i < TAM_POP; i++)
 		repare_solution(population[i], spot_list);
+		calc_cost(population[i]);
+	}
 }
 
-solution_t* ag(int num_spots, int num_cams, spot_t** spot_list){
+solution_t* genetic_algorithm(int num_spots, int num_cams, spot_t** spot_list){
 
 	solution_t** population1 = generate_init_population(num_spots, num_cams, spot_list);
 	solution_t** population2 = generate_init_population(num_spots, num_cams, spot_list);
@@ -146,9 +144,9 @@ solution_t* ag(int num_spots, int num_cams, spot_t** spot_list){
 	current_solution = new_solution(num_spots, num_cams);
 	*current_solution = *population1[0];
 
-	// int ger = 0;
+	int gen = 0;
 
-	for(int i = 0; i < NUM_GER; i++){
+	for(int i = 0; i < NUM_GEN; i++){
 
 		crossover(population1, population2);
 
@@ -163,38 +161,14 @@ solution_t* ag(int num_spots, int num_cams, spot_t** spot_list){
 
 		if(current_solution->cost > new_population[0]->cost){
 			*current_solution = *new_population[0];
-			// ger = i;
+			gen = i;
 		}
 
-		population1 = new_population;
+		for(int k = 0; k < TAM_POP; k++)
+			*population1[k] = *new_population[k];
 	}
 
-	// printf("curr cost: %i from ger: %i\n", current_solution->cost, ger);
+	printf("%i %i %.1f %i ", TAM_POP, NUM_GEN, PROB_MUT*100, gen);
 
 	return current_solution;
-}
-
-// DBG
-void print_populacao(solution_t** populacao){
-
-	for (int i = 0; i < TAM_POP; i++){
-
-		printf("\nCusto: %i \n", populacao[i]->cost);
-
-			int count = 0;
-		for (int j = 0; j < populacao[i]->num_spots; j++){
-
-
-			if (populacao[i]->coverage_spots[j])
-				// printf("%i ", j);
-				// printf("%i ", 1);
-				count++;
-			
-		}
-		printf("%i ", count);
-
-		printf("\n");
-
-	}
-		printf("\nFIM POP <_-------------\n");
 }
